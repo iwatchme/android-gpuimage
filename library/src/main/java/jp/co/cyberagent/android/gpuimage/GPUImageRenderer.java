@@ -99,6 +99,7 @@ public class GPUImageRenderer implements GLSurfaceView.Renderer, GLTextureView.R
     public void onSurfaceCreated(final GL10 unused, final EGLConfig config) {
         GLES20.glClearColor(backgroundRed, backgroundGreen, backgroundBlue, 1);
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+        //绑定对应的数据
         filter.ifNeedInit();
     }
 
@@ -106,6 +107,7 @@ public class GPUImageRenderer implements GLSurfaceView.Renderer, GLTextureView.R
     public void onSurfaceChanged(final GL10 gl, final int width, final int height) {
         outputWidth = width;
         outputHeight = height;
+        //确定视口大小
         GLES20.glViewport(0, 0, width, height);
         GLES20.glUseProgram(filter.getProgram());
         filter.onOutputSizeChanged(width, height);
@@ -117,6 +119,7 @@ public class GPUImageRenderer implements GLSurfaceView.Renderer, GLTextureView.R
 
     @Override
     public void onDrawFrame(final GL10 gl) {
+        //清屏
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         runAll(runOnDraw);
         filter.onDraw(glTextureId, glCubeBuffer, glTextureBuffer);

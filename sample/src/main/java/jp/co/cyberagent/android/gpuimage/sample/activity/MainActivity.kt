@@ -46,6 +46,9 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, CameraActivity::class.java))
             }
         }
+        findViewById<View>(R.id.button_test).setOnClickListener {
+            startActivity(Intent(this, TestActivity::class.java))
+        }
     }
 
     override fun onRequestPermissionsResult(

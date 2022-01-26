@@ -18,6 +18,7 @@ package jp.co.cyberagent.android.gpuimage.sample.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener

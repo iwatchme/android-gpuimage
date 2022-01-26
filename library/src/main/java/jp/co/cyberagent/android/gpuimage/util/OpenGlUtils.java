@@ -16,6 +16,8 @@
 
 package jp.co.cyberagent.android.gpuimage.util;
 
+import static android.opengl.GLES20.GL_VALIDATE_STATUS;
+
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.hardware.Camera.Size;
@@ -90,9 +92,13 @@ public class OpenGlUtils {
 
     public static int loadShader(final String strSource, final int iType) {
         int[] compiled = new int[1];
+        //根据不同的类型创建着色器id
         int iShader = GLES20.glCreateShader(iType);
+        //将着色器id和着色器程序内容连接
         GLES20.glShaderSource(iShader, strSource);
+        //编译着色器
         GLES20.glCompileShader(iShader);
+        //验证编译是否成功
         GLES20.glGetShaderiv(iShader, GLES20.GL_COMPILE_STATUS, compiled, 0);
         if (compiled[0] == 0) {
             Log.d("Load Shader Failed", "Compilation\n" + GLES20.glGetShaderInfoLog(iShader));
@@ -106,24 +112,31 @@ public class OpenGlUtils {
         int iFShader;
         int iProgId;
         int[] link = new int[1];
+        //编译顶点着色器
         iVShader = loadShader(strVSource, GLES20.GL_VERTEX_SHADER);
         if (iVShader == 0) {
             Log.d("Load Program", "Vertex Shader Failed");
             return 0;
         }
+        //编译片段着色器
         iFShader = loadShader(strFSource, GLES20.GL_FRAGMENT_SHADER);
         if (iFShader == 0) {
             Log.d("Load Program", "Fragment Shader Failed");
             return 0;
         }
 
+        //创建OpenGl 程序id
         iProgId = GLES20.glCreateProgram();
 
+        //链接上顶点着色器
         GLES20.glAttachShader(iProgId, iVShader);
+        //链接上片段着色器
         GLES20.glAttachShader(iProgId, iFShader);
 
+        //链接opengl程序
         GLES20.glLinkProgram(iProgId);
 
+        //验证链接结果是否失败
         GLES20.glGetProgramiv(iProgId, GLES20.GL_LINK_STATUS, link, 0);
         if (link[0] <= 0) {
             Log.d("Load Program", "Linking Failed");
