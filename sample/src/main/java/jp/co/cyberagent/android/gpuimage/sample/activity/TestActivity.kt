@@ -20,6 +20,8 @@ import android.content.pm.ConfigurationInfo
 
 import android.app.ActivityManager
 import android.provider.SyncStateContract
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 class TestActivity : AppCompatActivity() {
@@ -80,12 +82,17 @@ class PointerRender(val context:Context) : GLSurfaceView.Renderer {
         Triangle(context)
     }
 
+    val circle by lazy {
+        Circle(context)
+    }
+
 
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
 //        point.bindData()
  //       line.bindData()
-         triangle.bindData()
+//         triangle.bindData()
+        circle.bindData()
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -99,7 +106,8 @@ class PointerRender(val context:Context) : GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT or GLES20.GL_COLOR_BUFFER_BIT)
 //        point.draw()
     //    line.draw()
-        triangle.draw()
+//        triangle.draw()
+        circle.draw()
     }
 
 }
@@ -352,6 +360,22 @@ class Circle(context: Context) {
     init {
         mProgramId = buildProgram()
         GLES20.glUseProgram(mProgramId)
+        initVertexData()
+    }
+
+    private fun initVertexData() {
+        pointvertex[0] = 0f
+        pointvertex[0] = 0f
+
+        (0..VERTEX_DATA_NUM).forEach {
+            pointvertex[it * 2 + 2] = (radius * cos(radian * it)).toFloat()
+            pointvertex[it * 2 + 2 + 1] = (radius * sin(radian * it)).toFloat()
+        }
+
+
+        pointvertex[ VERTEX_DATA_NUM * 2 + 2 ] = (radius * cos(radian)).toFloat()
+        pointvertex[ VERTEX_DATA_NUM * 2 + 2 + 1] = (radius * sin(radian)).toFloat()
+
     }
 
 
@@ -374,7 +398,7 @@ class Circle(context: Context) {
 
     fun draw() {
         GLES20.glUniform4f(color, 0f, 0f, 1f, 1f)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, pointvertex.size / 2)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, pointvertex.size / 2)
     }
 
 }
