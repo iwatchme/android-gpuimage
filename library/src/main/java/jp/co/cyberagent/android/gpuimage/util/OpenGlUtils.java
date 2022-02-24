@@ -63,16 +63,22 @@ public class OpenGlUtils {
     public static int loadTexture(final IntBuffer data, final int width, final int height, final int usedTexId) {
         int textures[] = new int[1];
         if (usedTexId == NO_TEXTURE) {
+            //创建纹理Id
             GLES20.glGenTextures(1, textures, 0);
+            //将纹理id和纹理目标绑定
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
+            //设置放大情况下过滤方式
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
                     GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+            //设置缩小情况下过滤方式
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
                     GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
                     GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
                     GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+            // 加载纹理到 OpenGL，读入 Bitmap 定义的位图数据，并把它复制到当前绑定的纹理对象
+            // 当前绑定的纹理对象就会被附加上纹理图像。
             GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, width, height,
                     0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, data);
         } else {
