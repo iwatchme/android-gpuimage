@@ -15,6 +15,7 @@ import jp.co.cyberagent.android.gpuimage.sample.test.Circle
 import jp.co.cyberagent.android.gpuimage.sample.test.Line
 import jp.co.cyberagent.android.gpuimage.sample.test.Point
 import jp.co.cyberagent.android.gpuimage.sample.test.Triangle
+import jp.co.cyberagent.android.gpuimage.sample.test.texture.TriangleTexture
 
 
 class TestActivity : AppCompatActivity() {
@@ -79,18 +80,23 @@ class CustomRender(val context:Context) : GLSurfaceView.Renderer {
     }
 
 
+    val triangleTexture by  lazy {
+        TriangleTexture(context)
+    }
+
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
 //        point.bindData()
  //       line.bindData()
 //         triangle.bindData()
-             circle.bindData()
+//             circle.bindData()
+        triangleTexture.bindData()
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         //确定视口大小
         GLES20.glViewport(0,0, width, height)
-        circle.onSurfaceChanged(width, height)
+//        circle.onSurfaceChanged(width, height)
     }
 
     override fun onDrawFrame(gl: GL10?) {
@@ -99,7 +105,8 @@ class CustomRender(val context:Context) : GLSurfaceView.Renderer {
 //        point.draw()
     //    line.draw()
 //        triangle.draw()
-        circle.draw()
+//        circle.draw()
+        triangleTexture.draw()
     }
 
 }
