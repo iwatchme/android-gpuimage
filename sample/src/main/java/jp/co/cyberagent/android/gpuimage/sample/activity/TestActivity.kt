@@ -15,6 +15,7 @@ import jp.co.cyberagent.android.gpuimage.sample.test.Circle
 import jp.co.cyberagent.android.gpuimage.sample.test.Line
 import jp.co.cyberagent.android.gpuimage.sample.test.Point
 import jp.co.cyberagent.android.gpuimage.sample.test.Triangle
+import jp.co.cyberagent.android.gpuimage.sample.test.texture.RotateTriangleTexture
 import jp.co.cyberagent.android.gpuimage.sample.test.texture.TriangleTexture
 
 
@@ -81,7 +82,7 @@ class CustomRender(val context:Context) : GLSurfaceView.Renderer {
 
 
     val triangleTexture by  lazy {
-        TriangleTexture(context)
+        RotateTriangleTexture(context)
     }
 
 
@@ -97,6 +98,7 @@ class CustomRender(val context:Context) : GLSurfaceView.Renderer {
         //确定视口大小
         GLES20.glViewport(0,0, width, height)
 //        circle.onSurfaceChanged(width, height)
+        triangleTexture.onSurfaceChanged(width, height)
     }
 
     override fun onDrawFrame(gl: GL10?) {

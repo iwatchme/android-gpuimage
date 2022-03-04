@@ -8,15 +8,18 @@ import android.opengl.Matrix
 import android.util.Log
 import com.blankj.utilcode.util.ImageUtils
 import com.blankj.utilcode.util.ResourceUtils
+import io.reactivex.rxjava3.core.Observable
 import jp.co.cyberagent.android.gpuimage.sample.R
+import jp.co.cyberagent.android.gpuimage.sample.test.MatrixState
 import jp.co.cyberagent.android.gpuimage.util.OpenGlUtils
 import jp.co.cyberagent.android.gpuimage.util.OpenGlUtils.NO_TEXTURE
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
+import java.util.concurrent.TimeUnit
 
-class TriangleTexture(context: Context) {
+class RotateTriangleTexture(context: Context) {
 
     private fun buildProgram() : Int{
 
@@ -81,6 +84,30 @@ class TriangleTexture(context: Context) {
 
     lateinit var bitmap:Bitmap
 
+    private val eyeDistance = 2.0f
+
+    private val rotateNum = 360
+
+    private val radian = 2 * Math.PI / rotateNum
+
+    private var eyeX = 0f
+
+    private var eyeZ = 0f
+
+    private var eyeY = 0f
+
+    private var num = 0
+
+
+
+    val lookX = 0.0f
+    val lookY = 0.0f
+    val lookZ = 0.0f
+
+    val upX = 0.0f
+    val upY = 1.0f
+    val upZ = 0.0f
+
 
     private val vertexArray by lazy {
         ByteBuffer.allocateDirect(
@@ -132,31 +159,36 @@ class TriangleTexture(context: Context) {
 
 
         Matrix.setIdentityM(mModelMatrix, 0)
-        Matrix.setIdentityM(mViewMatrix, 0)
+//        Matrix.setIdentityM(mViewMatrix, 0)
         Matrix.setIdentityM(mProjectionMatrix, 0)
 
     }
 
     fun draw() {
         GLES20.glUniformMatrix4fv(uModelMatrixPosition, 1, false, mModelMatrix, 0)
-        GLES20.glUniformMatrix4fv(uViewMatrixPosition, 1, false, mViewMatrix, 0)
+//        GLES20.glUniformMatrix4fv(uViewMatrixPosition, 1, false, mViewMatrix, 0)
         GLES20.glUniformMatrix4fv(uProjectionMatrixPosition, 1, false, mProjectionMatrix, 0)
 
         vertexArray.setVertexAttribPointer(0, aPosition, POSITION_COMPONENT_COUNT, 0 )
         textureArray.setVertexAttribPointer(0, aTextureCoordinateAttr, POSITION_COMPONENT_COUNT, 0)
-
 
         OpenGlUtils.loadTexture(bitmap, mTextureId, false)
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3)
     }
 
-}
+    fun onSurfaceChanged(width: Int, height: Int) {
+        Observable.interval(30,TimeUnit.MILLISECONDS)
+                .subscribe {
+                    eyeX = (eyeDistance * Math.sin((radian * num ))).toFloat()
+                    eyeZ = eyeDistance * Math.cos((radian * num)).toFloat()
+                    num ++
+                    if (num > 360) num = 0
 
+                    MatrixState.setCamera(eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ)
+                    GLES20.glUniformMatrix4fv(uViewMatrixPosition , 1, false, MatrixState.getVMatrix(), 0)
+                }
 
-fun FloatBuffer.setVertexAttribPointer(dataOffset:Int,attributeLocation:Int, componentCount: Int, stride:Int) {
-    position(dataOffset)
-    GLES20.glVertexAttribPointer(attributeLocation, componentCount, GLES20.GL_FLOAT, false, stride, this)
-    GLES20.glEnableVertexAttribArray(attributeLocation)
-    position(0)
+    }
+
 }
