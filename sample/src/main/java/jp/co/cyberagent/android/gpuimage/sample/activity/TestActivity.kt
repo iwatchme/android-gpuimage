@@ -11,6 +11,7 @@ import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 import android.app.ActivityManager
+import android.view.animation.RotateAnimation
 import jp.co.cyberagent.android.gpuimage.sample.test.Circle
 import jp.co.cyberagent.android.gpuimage.sample.test.Line
 import jp.co.cyberagent.android.gpuimage.sample.test.Point
@@ -82,7 +83,7 @@ class CustomRender(val context:Context) : GLSurfaceView.Renderer {
 
 
     val triangleTexture by  lazy {
-        RotateTriangleTexture(context)
+       RotateTriangleTexture(context)
     }
 
 

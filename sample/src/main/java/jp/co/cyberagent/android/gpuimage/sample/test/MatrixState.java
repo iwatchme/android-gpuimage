@@ -127,5 +127,9 @@ public class MatrixState {
     {
         return mVMatrix;
     }
+
+    public static float[] getMProjMatrix() {
+        return mProjMatrix;
+    }
 }
 

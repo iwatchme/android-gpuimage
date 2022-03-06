@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.opengl.GLES20
 import android.opengl.GLES20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS
+import android.opengl.GLES30
 import android.opengl.Matrix
 import android.util.Log
 import com.blankj.utilcode.util.ImageUtils
@@ -35,7 +36,7 @@ class RotateTriangleTexture(context: Context) {
     }
 
     private var pointvertex = floatArrayOf(
-            -1f, 1f, -1f, -1f, 1f, -1f )
+            -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f )
 
     private var textureArrayData = floatArrayOf(
             0.5f, 0f,
@@ -90,15 +91,11 @@ class RotateTriangleTexture(context: Context) {
 
     private val radian = 2 * Math.PI / rotateNum
 
-    private var eyeX = 0f
-
-    private var eyeZ = 0f
-
-    private var eyeY = 0f
-
     private var num = 0
 
-
+    private var eyeX = 0.0f
+    private var eyeY = 0.0f
+    private var eyeZ = 2.0f
 
     val lookX = 0.0f
     val lookY = 0.0f
@@ -155,22 +152,24 @@ class RotateTriangleTexture(context: Context) {
 
         GLES20.glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, intBuffer)
 
-
-
-
         Matrix.setIdentityM(mModelMatrix, 0)
-//        Matrix.setIdentityM(mViewMatrix, 0)
+        Matrix.setIdentityM(mViewMatrix, 0)
         Matrix.setIdentityM(mProjectionMatrix, 0)
 
     }
 
     fun draw() {
-        GLES20.glUniformMatrix4fv(uModelMatrixPosition, 1, false, mModelMatrix, 0)
-//        GLES20.glUniformMatrix4fv(uViewMatrixPosition, 1, false, mViewMatrix, 0)
-        GLES20.glUniformMatrix4fv(uProjectionMatrixPosition, 1, false, mProjectionMatrix, 0)
-
         vertexArray.setVertexAttribPointer(0, aPosition, POSITION_COMPONENT_COUNT, 0 )
         textureArray.setVertexAttribPointer(0, aTextureCoordinateAttr, POSITION_COMPONENT_COUNT, 0)
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
+
+        GLES20.glUniformMatrix4fv(uModelMatrixPosition, 1, false, mModelMatrix, 0)
+        GLES20.glUniformMatrix4fv(uProjectionMatrixPosition, 1, false, MatrixState.getMProjMatrix(),  0)
+
+
+        MatrixState.setCamera(eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ)
+        GLES20.glUniformMatrix4fv(uViewMatrixPosition, 1, false,MatrixState.getVMatrix(), 0)
 
         OpenGlUtils.loadTexture(bitmap, mTextureId, false)
 
@@ -178,15 +177,22 @@ class RotateTriangleTexture(context: Context) {
     }
 
     fun onSurfaceChanged(width: Int, height: Int) {
+        val ratio = width.toFloat() / height
+        val left = -ratio
+        val right = ratio
+        val bottom = -1.0f
+        val top = 1.0f
+        val near = 1.0f
+        val far = 6.0f
+
+        MatrixState.setProjectFrustum(left, right, top, bottom, near, far)
+
         Observable.interval(30,TimeUnit.MILLISECONDS)
                 .subscribe {
                     eyeX = (eyeDistance * Math.sin((radian * num ))).toFloat()
                     eyeZ = eyeDistance * Math.cos((radian * num)).toFloat()
                     num ++
                     if (num > 360) num = 0
-
-                    MatrixState.setCamera(eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ)
-                    GLES20.glUniformMatrix4fv(uViewMatrixPosition , 1, false, MatrixState.getVMatrix(), 0)
                 }
 
     }
